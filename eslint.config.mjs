@@ -20,6 +20,23 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      // TypeScript specific rules
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      
+      // React specific rules
+      "react/jsx-key": "error",
+      "react/jsx-no-duplicate-props": "error",
+      "react/jsx-no-undef": "error",
+      "react/no-unescaped-entities": "warn",
+      
+      // General code quality
+      "prefer-const": "error",
+      "no-var": "error",
+    },
+  },
 ];
 
 export default eslintConfig;
