@@ -163,7 +163,7 @@
       const url = endpoint.startsWith("http")
         ? endpoint
         : `${this.config.apiUrl.replace(
-            "/api/enhanced-chat/widget",
+            "https://echoai-pi.vercel.app/api/enhanced-chat/widget",
             ""
           )}${endpoint}`;
 
@@ -199,13 +199,13 @@
         const abortController = new AbortController();
         this.abortControllers.set("streaming", abortController);
 
-        return this.request("/api/enhanced-chat/widget", {
+        return this.request("https://echoai-pi.vercel.app/api/enhanced-chat/widget", {
           method: "POST",
           body: JSON.stringify(body),
           signal: abortController.signal,
         });
       } else {
-        const response = await this.request("/api/enhanced-chat/widget", {
+        const response = await this.request("https://echoai-pi.vercel.app/api/enhanced-chat/widget", {
           method: "POST",
           body: JSON.stringify(body),
         });
@@ -240,7 +240,7 @@
           stream: true,
         };
 
-        const response = await this.request("/api/enhanced-chat/widget", {
+        const response = await this.request("https://echoai-pi.vercel.app/api/enhanced-chat/widget", {
           method: "POST",
           body: JSON.stringify(body),
           signal: abortController.signal,
@@ -422,10 +422,10 @@
           reject(new Error("Upload timeout"));
         });
 
-        const url = "/api/upload/image".startsWith("http")
-          ? "/api/upload/image"
+        const url = "https://echoai-pi.vercel.app/api/upload/image".startsWith("http")
+          ? "https://echoai-pi.vercel.app/api/upload/image"
           : `${this.config.apiUrl.replace(
-              "/api/enhanced-chat/widget",
+              "https://echoai-pi.vercel.app/api/enhanced-chat/widget",
               ""
             )}/api/upload/image`;
 
@@ -437,14 +437,14 @@
 
     async loadFAQs() {
       const response = await this.request(
-        `/api/faq?chatbotId=${this.config.chatbotId}`
+        `https://echoai-pi.vercel.app/api/faq?chatbotId=${this.config.chatbotId}`
       );
       return response.json();
     }
 
     async trackFAQUsage(faqId) {
       try {
-        const response = await this.request("/api/faq/track-usage", {
+        const response = await this.request("https://echoai-pi.vercel.app/api/faq/track-usage", {
           method: "POST",
           body: JSON.stringify({
             faqId: faqId,
@@ -472,20 +472,20 @@
       }
 
       const response = await this.request(
-        `/api/chat/history?${params.toString()}`
+        `https://echoai-pi.vercel.app/api/chat/history?${params.toString()}`
       );
       return response.json();
     }
 
     async loadConversation(sessionId) {
-      const response = await this.request(`/api/chat/session/${sessionId}`);
+      const response = await this.request(`https://echoai-pi.vercel.app/api/chat/session/${sessionId}`);
       return response.json();
     }
 
     async loadChatbotSettings() {
       const apiUrl = this.config.apiUrl.replace(
-        "/api/enhanced-chat/widget",
-        "/api/public/chatbots/" + this.config.chatbotId
+        "https://echoai-pi.vercel.app/api/enhanced-chat/widget",
+        "https://echoai-pi.vercel.app/api/public/chatbots/" + this.config.chatbotId
       );
       const response = await this.request(apiUrl);
       return response.json();
@@ -635,7 +635,7 @@
 
     getServerSentEventsUrl() {
       const baseUrl = this.config.apiUrl.replace(
-        "/api/enhanced-chat/widget",
+        "https://echoai-pi.vercel.app/api/enhanced-chat/widget",
         ""
       );
       return `${baseUrl}/api/realtime/events?chatbotId=${this.config.chatbotId}&apiKey=${this.config.apiKey}`;
@@ -5397,7 +5397,7 @@
         );
 
         const response = await this.apiClient.request(
-          `/api/chat/messages?conversationId=${conversationId}&chatbotId=${this.config.chatbotId}&userEmail=${this.config.userEmail}`
+          `https://echoai-pi.vercel.app/api/chat/messages?conversationId=${conversationId}&chatbotId=${this.config.chatbotId}&userEmail=${this.config.userEmail}`
         );
 
         if (response.ok) {
@@ -5993,7 +5993,7 @@
       if (currentStatus === "AWAITING_HUMAN_RESPONSE") {
         // Return to AI handling
         try {
-          const response = await fetch("http://localhost:3000/api/chat/conversation-status", {
+          const response = await fetch("https://echoai-pi.vercel.app/api/chat/conversation-status", {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -6031,7 +6031,7 @@
 
       // Escalate to human agent
       try {
-        const response = await fetch("http://localhost:3000/api/chat/conversation-status", {
+        const response = await fetch("https://echoai-pi.vercel.app/api/chat/conversation-status", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -8018,7 +8018,7 @@
 
         // Load conversation messages
         const response = await this.apiClient.request(
-          `/api/chat/messages?conversationId=${sessionId}&chatbotId=${this.config.chatbotId}&userEmail=${this.config.userEmail}`
+          `https://echoai-pi.vercel.app/api/chat/messages?conversationId=${sessionId}&chatbotId=${this.config.chatbotId}&userEmail=${this.config.userEmail}`
         );
 
         if (response.ok) {
