@@ -133,6 +133,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
             <Button
+              type="button"
               variant={"outline"}
               onClick={async () =>
                 await signInWithProvider({

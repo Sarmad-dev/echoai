@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { OAuth2Manager } from '@/lib/integrations/oauth2-manager'
 import { getProvider } from '@/lib/integrations/providers'
-import { createClient } from '@/lib/supabase/supabase'
+import { createClient } from '@/lib/supabase/supabase-server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate that the user exists and is authenticated
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: user, error: userError } = await supabase
       .from('User')
       .select('id')

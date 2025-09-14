@@ -63,7 +63,6 @@ export async function updateSession(request: NextRequest) {
   // Basic authentication check for protected routes
   if (isProtectedRoute && !user) {
     const redirectUrl = new URL("/login", request.url);
-    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 

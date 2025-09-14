@@ -192,6 +192,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
             <Button
+              type="button"
               variant={"outline"}
               onClick={async () =>
                 await signInWithProvider({
