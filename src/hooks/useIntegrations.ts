@@ -95,7 +95,7 @@ export function useIntegrations(options: UseIntegrationsOptions = {}): UseIntegr
       setIsLoading(false)
       console.log('🏁 Finished loading integrations')
     }
-  }, [userId, onError]) // Remove onError from dependencies
+  }, [userId]) // Remove onError from dependencies
 
   const initiateOAuth = useCallback(async (providerId: string) => {
     if (!userId) {
@@ -143,7 +143,7 @@ export function useIntegrations(options: UseIntegrationsOptions = {}): UseIntegr
     } finally {
       setIsConnecting(false)
     }
-  }, [userId, onError]) // Remove onError from dependencies
+  }, [userId]) // Remove onError from dependencies
 
   const disconnectIntegration = useCallback(async (integrationId: string) => {
     if (!userId) {
@@ -191,7 +191,7 @@ export function useIntegrations(options: UseIntegrationsOptions = {}): UseIntegr
     } finally {
       setIsDisconnecting(false)
     }
-  }, [userId, onError, onSuccess]) // Remove onSuccess and onError from dependencies
+  }, [userId]) // Remove onSuccess and onError from dependencies
 
   const testConnection = useCallback(async (integrationId: string) => {
     setIsTesting(true)
@@ -261,7 +261,7 @@ export function useIntegrations(options: UseIntegrationsOptions = {}): UseIntegr
     } finally {
       setIsTesting(false)
     }
-  }, [onError, onSuccess]) // Remove userId dependency since we get it from session
+  }, []) // Remove userId dependency since we get it from session
 
   const refetch = useCallback(async () => {
     await fetchIntegrations()
