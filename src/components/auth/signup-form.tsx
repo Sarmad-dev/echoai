@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { useAuth } from "@/contexts/auth-context";
 import { SignInWithOAuthCredentials } from "@supabase/supabase-js";
+import Image from "next/image";
 
 const signupSchema = z
   .object({
@@ -191,13 +192,21 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
             <Button
+              variant={"outline"}
               onClick={async () =>
                 await signInWithProvider({
                   provider: "google",
                   options: { redirectTo: "/dashboard" },
                 })
               }
+              className="w-full flex gap-2"
             >
+              <Image
+                src={"/google-logo.png"}
+                alt="google logo"
+                width={40}
+                height={40}
+              />
               Sign in with Google
             </Button>
           </form>

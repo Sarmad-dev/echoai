@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useAuth } from "@/contexts/auth-context";
+import Image from "next/image";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -132,13 +133,21 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
             <Button
+              variant={"outline"}
               onClick={async () =>
                 await signInWithProvider({
                   provider: "google",
                   options: { redirectTo: "/dashboard" },
                 })
               }
+              className="w-full flex gap-2"
             >
+              <Image
+                src={"/google-logo.png"}
+                alt="google logo"
+                width={40}
+                height={40}
+              />
               Sign in with Google
             </Button>
           </form>
