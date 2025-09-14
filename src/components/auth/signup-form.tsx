@@ -199,13 +199,13 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
                   options: { redirectTo: "/dashboard" },
                 })
               }
-              className="w-full flex gap-2"
+              className="w-full flex gap-2 hover:bg-transparent"
             >
               <Image
                 src={"/google-logo.png"}
                 alt="google logo"
-                width={40}
-                height={40}
+                width={30}
+                height={30}
               />
               Sign in with Google
             </Button>
