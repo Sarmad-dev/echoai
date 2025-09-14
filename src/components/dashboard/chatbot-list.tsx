@@ -129,7 +129,6 @@ export function ChatbotList({ onSelectChatbot, onCreateChatbot, onEditChatbot }:
           </div>
           <Button 
             onClick={onCreateChatbot}
-            disabled={limits.currentCount >= limits.maxChatbots}
           >
             <Plus className="h-4 w-4 mr-2" />
             Create Chatbot
@@ -213,22 +212,6 @@ export function ChatbotList({ onSelectChatbot, onCreateChatbot, onEditChatbot }:
               </Card>
             ))}
           </div>
-        )}
-
-        {limits.currentCount >= limits.maxChatbots && (
-          <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-amber-500" />
-                <p className="text-sm">
-                  You've reached your chatbot limit. 
-                  {limits.maxChatbots === 1 && (
-                    <span className="ml-1">Upgrade to Pro to create up to 3 chatbots.</span>
-                  )}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         )}
       </div>
 
