@@ -140,7 +140,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                   options: { redirectTo: "/dashboard" },
                 })
               }
-              className="w-full flex gap-2 hover:bg-transparent"
+              className="w-full flex gap-2 hover:bg-transparent hover:text-black"
             >
               <Image
                 src={"/google-logo.png"}
