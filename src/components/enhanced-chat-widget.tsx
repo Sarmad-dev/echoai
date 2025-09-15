@@ -1691,7 +1691,6 @@ export function EnhancedChatWidget({
       <div
         className={cn(
           "fixed bottom-4 right-4 z-50 w-80 h-[500px] flex flex-col",
-          isDarkMode ? "dark" : "",
           className
         )}
         style={customStyles}
