@@ -203,7 +203,7 @@ export function ChatbotEmbedGenerator({ chatbot }: ChatbotEmbedGeneratorProps) {
     ${embedConfig.enableCaching ? `
     // Enable caching for better performance
     if ('serviceWorker' in navigator && window.EchoAIConfig.performanceConfig.enableCaching) {
-      navigator.serviceWorker.register('${baseUrl}/sw-echoai.js').catch(function(err) {
+      navigator.serviceWorker.register('https://echoai-pi.vercel.app/sw-echoai.js').catch(function(err) {
         console.log('EchoAI: Service worker registration failed:', err);
       });
     }` : ''}
@@ -215,7 +215,7 @@ export function ChatbotEmbedGenerator({ chatbot }: ChatbotEmbedGeneratorProps) {
       if (!isModernBrowser && window.EchoAIConfig.compatibilityConfig.enablePolyfills) {
         // Load polyfills for older browsers
         const polyfillScript = document.createElement('script');
-        polyfillScript.src = '${baseUrl}/polyfills.js';
+        polyfillScript.src = 'https://echoai-pi.vercel.app/polyfills.js';
         polyfillScript.onload = loadEchoAI;
         document.head.appendChild(polyfillScript);
         return false;
@@ -227,7 +227,7 @@ export function ChatbotEmbedGenerator({ chatbot }: ChatbotEmbedGeneratorProps) {
     // Create and inject the enhanced chat widget
     function loadEchoAI() {
       const script = document.createElement('script');
-      script.src = '${baseUrl}/${widgetScript}';
+      script.src = 'https://echoai-pi.vercel.app/${widgetScript}';
       script.async = true;
       
       ${embedConfig.lazyLoading ? `
@@ -258,7 +258,7 @@ export function ChatbotEmbedGenerator({ chatbot }: ChatbotEmbedGeneratorProps) {
         // Fallback to basic widget if enhanced fails
         if (window.EchoAIConfig.compatibilityConfig.fallbackMode !== 'enhanced') {
           const fallbackScript = document.createElement('script');
-          fallbackScript.src = '${baseUrl}/widget.js';
+          fallbackScript.src = 'https://echoai-pi.vercel.app/widget.js';
           fallbackScript.async = true;
           fallbackScript.onload = function() {
             if (window.EchoAI) {
@@ -612,85 +612,306 @@ For older browsers, polyfills are automatically loaded when enabled.`;
   const generateReactCode = () => {
     if (!selectedChatbot) return "";
 
-    return `import { EnhancedChatWidget } from '@/components/enhanced-chat-widget'
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://your-domain.com";
 
-function App() {
-  const chatbotSettings = {
+    return `import React, { useEffect, useRef, useState } from 'react';
+
+// EchoAI Enhanced Chatbot React Component
+const EchoAIChatbot: React.FC = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Configuration object - same as HTML version
+  const config = {
+    chatbotId: "${selectedChatbot.id}",
+    apiKey: "${selectedChatbot.apiKey}",
+    userEmail: 'preview@example.com', // Replace with actual user email
+    // Embedded settings as fallback
     chatbotName: "${selectedChatbot.name}",
     welcomeMessage: "${selectedChatbot.welcomeMessage}",
-    primaryColor: "${selectedChatbot.primaryColor}"
+    primaryColor: "${selectedChatbot.primaryColor}",
+    // Widget configuration
+    position: "${embedConfig.position}",
+    theme: "${embedConfig.theme}",
+    showBranding: ${embedConfig.showBranding},
+    // Enhanced features configuration
+    enableEnhancedFeatures: ${embedConfig.enableEnhancedFeatures},
+    enableImageUpload: ${embedConfig.enableImageUpload},
+    enableFAQ: ${embedConfig.enableFAQ},
+    enableHistory: ${embedConfig.enableHistory},
+    // Streaming configuration
+    streamingConfig: {
+      enabled: ${embedConfig.streamingEnabled},
+      typingSpeed: ${embedConfig.typingSpeed},
+      showTypingIndicator: ${embedConfig.showTypingIndicator},
+      enableTokenAnimation: ${embedConfig.enableTokenAnimation},
+    },
+    // Intelligence configuration
+    intelligenceConfig: {
+      enabled: ${embedConfig.enableEnhancedFeatures},
+      showProactiveQuestions: ${embedConfig.showProactiveQuestions},
+      showSuggestedTopics: ${embedConfig.showSuggestedTopics},
+      showConversationActions: ${embedConfig.showConversationActions},
+      showIntelligenceMetrics: ${embedConfig.showIntelligenceMetrics},
+    },
+    // Lead collection configuration
+    leadCollectionConfig: {
+      enabled: ${embedConfig.enableLeadCollection},
+      collectEmail: ${embedConfig.collectEmail},
+      collectPhone: ${embedConfig.collectPhone},
+      collectCompany: ${embedConfig.collectCompany},
+      progressiveCollection: ${embedConfig.progressiveCollection},
+    },
+    // Escalation configuration
+    escalationConfig: {
+      enabled: ${embedConfig.enableEscalation},
+      showEscalationButton: ${embedConfig.showEscalationButton},
+      escalationThreshold: ${embedConfig.escalationThreshold},
+      humanAgentAvailable: ${embedConfig.humanAgentAvailable},
+    },
+    // Performance optimization
+    performanceConfig: {
+      enableCaching: ${embedConfig.enableCaching},
+      enableCompression: ${embedConfig.enableCompression},
+      lazyLoading: ${embedConfig.lazyLoading},
+    },
+    // Cross-browser compatibility
+    compatibilityConfig: {
+      enablePolyfills: ${embedConfig.enablePolyfills},
+      fallbackMode: "${embedConfig.fallbackMode}",
+    },
+    // API URLs - use enhanced endpoints when enhanced features are enabled
+    apiUrl: \`\${window.location.origin}/api/\${${embedConfig.enableEnhancedFeatures} ? 'enhanced-chat/widget' : 'chat'}\`,
+    // Event handlers
+    onLeadCollected: (leadData: Record<string, any>) => {
+      console.log('Lead collected:', leadData);
+      // Handle lead data (send to CRM, analytics, etc.)
+      // Example: Send to Google Analytics
+      const w = window as unknown as { gtag?: (...args: any[]) => void };
+      if (typeof w.gtag === 'function') {
+        w.gtag('event', 'lead_collected', {
+          'event_category': 'chatbot',
+          'event_label': leadData.email
+        });
+      }
+    },
+    onEscalationRequested: (escalationData: Record<string, any>) => {
+      console.log('Escalation requested:', escalationData);
+      // Handle escalation (notify agents, create ticket, etc.)
+      // Example: Send notification to your backend
+      fetch('/api/notify-support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(escalationData)
+      }).catch(err => console.error('Failed to notify support:', err));
+    },
+    onError: (error: string) => {
+      console.error('Chatbot error:', error);
+      setError(error);
+      // Example: Send to error tracking service
+      const w = window as unknown as { Sentry?: { captureException: (e: any) => void } };
+      if (w.Sentry && typeof w.Sentry.captureException === 'function') {
+        w.Sentry.captureException(new Error(error));
+      }
+    }
   };
 
-  const streamingConfig = {
-    enabled: ${embedConfig.streamingEnabled},
-    typingSpeed: ${embedConfig.typingSpeed},
-    showTypingIndicator: ${embedConfig.showTypingIndicator},
-    enableTokenAnimation: ${embedConfig.enableTokenAnimation}
+  // Check browser support - same logic as HTML version
+  const checkBrowserSupport = (): boolean => {
+    const isModernBrowser = 'fetch' in window && 'Promise' in window && 'Map' in window;
+    
+    if (!isModernBrowser && config.compatibilityConfig.enablePolyfills) {
+      // Load polyfills for older browsers
+      const polyfillScript = document.createElement('script');
+      polyfillScript.src = \`\https://echoai-pi.vercel.app/polyfills.js\`;
+      polyfillScript.onload = () => loadEchoAI();
+      document.head.appendChild(polyfillScript);
+      return false;
+    }
+    
+    return true;
   };
 
-  const intelligenceConfig = {
-    enabled: ${embedConfig.enableEnhancedFeatures},
-    showProactiveQuestions: ${embedConfig.showProactiveQuestions},
-    showSuggestedTopics: ${embedConfig.showSuggestedTopics},
-    showConversationActions: ${embedConfig.showConversationActions},
-    showIntelligenceMetrics: ${embedConfig.showIntelligenceMetrics}
+  // Load EchoAI script - same logic as HTML version
+  const loadEchoAI = (): void => {
+    if (isLoaded || isLoading) return;
+    
+    setIsLoading(true);
+    setError(null);
+
+    const script = document.createElement('script');
+    const widgetScript = config.enableEnhancedFeatures ? 'enhanced-widget.js' : 'widget.js';
+    script.src = \`\https://echoai-pi.vercel.app/\${widgetScript}\`;
+    script.async = true;
+    
+    script.onload = () => {
+      if (window.EchoAI) {
+        // Set global config
+        window.EchoAIConfig = config;
+        window.EchoAI.init(config);
+        setIsLoaded(true);
+        setIsLoading(false);
+      } else {
+        setError('EchoAI widget failed to initialize');
+        setIsLoading(false);
+      }
+    };
+    
+    script.onerror = () => {
+      console.error('EchoAI: Failed to load widget script');
+      setError('Failed to load EchoAI widget script');
+      
+      // Fallback to basic widget if enhanced fails
+      if (config.compatibilityConfig.fallbackMode !== 'enhanced') {
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = \`\https://echoai-pi.vercel.app/widget.js\`;
+        fallbackScript.async = true;
+        fallbackScript.onload = () => {
+          if (window.EchoAI) {
+            window.EchoAIConfig = config;
+            window.EchoAI.init(config);
+            setIsLoaded(true);
+            setIsLoading(false);
+          }
+        };
+        fallbackScript.onerror = () => {
+          setError('Failed to load fallback widget script');
+          setIsLoading(false);
+        };
+        document.head.appendChild(fallbackScript);
+      } else {
+        setIsLoading(false);
+      }
+    };
+    
+    document.head.appendChild(script);
+    scriptRef.current = script;
   };
 
-  const leadCollectionConfig = {
-    enabled: ${embedConfig.enableLeadCollection},
-    collectEmail: ${embedConfig.collectEmail},
-    collectPhone: ${embedConfig.collectPhone},
-    collectCompany: ${embedConfig.collectCompany},
-    progressiveCollection: ${embedConfig.progressiveCollection}
-  };
+  // Performance optimization: Preload critical resources
+  useEffect(() => {
+    if (config.performanceConfig.enableCaching && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register(\`\https://echoai-pi.vercel.app/sw-echoai.js\`).catch((err) => {
+        console.log('EchoAI: Service worker registration failed:', err);
+      });
+    }
+  }, []);
 
-  const escalationConfig = {
-    enabled: ${embedConfig.enableEscalation},
-    showEscalationButton: ${embedConfig.showEscalationButton},
-    escalationThreshold: ${embedConfig.escalationThreshold},
-    humanAgentAvailable: ${embedConfig.humanAgentAvailable}
-  };
+  // Main initialization effect
+  useEffect(() => {
+    if (checkBrowserSupport()) {
+      if (config.performanceConfig.lazyLoading) {
+        // Lazy loading: Only load when user is likely to interact
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              loadEchoAI();
+              observer.disconnect();
+            }
+          });
+        });
+        
+        if (containerRef.current) {
+          observer.observe(containerRef.current);
+        }
+        
+        return () => observer.disconnect();
+      } else {
+        // Load immediately
+        loadEchoAI();
+      }
+    }
+  }, []);
 
-  const handleLeadCollected = (leadData) => {
-    console.log('Lead collected:', leadData);
-    // Handle lead data (send to CRM, analytics, etc.)
-  };
-
-  const handleEscalationRequested = (escalationData) => {
-    console.log('Escalation requested:', escalationData);
-    // Handle escalation (notify agents, create ticket, etc.)
-  };
-
-  const handleError = (error) => {
-    console.error('Chat widget error:', error);
-    // Handle errors (logging, user notification, etc.)
-  };
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      // Clean up script if component unmounts
+      if (scriptRef.current && scriptRef.current.parentNode) {
+        scriptRef.current.parentNode.removeChild(scriptRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div>
-      {/* Your app content */}
-      
-      <EnhancedChatWidget
-        apiKey="${selectedChatbot.apiKey}"
-        chatbotId="${selectedChatbot.id}"
-        settings={chatbotSettings}
-        className="!fixed !${embedConfig.position.includes('bottom') ? 'bottom-4' : 'top-4'} !${embedConfig.position.includes('right') ? 'right-4' : 'left-4'}"
-        enableImageUpload={${embedConfig.enableImageUpload}}
-        enableFAQ={${embedConfig.enableFAQ}}
-        enableHistory={${embedConfig.enableHistory}}
-        enableEnhancedFeatures={${embedConfig.enableEnhancedFeatures}}
-        streamingConfig={streamingConfig}
-        intelligenceConfig={intelligenceConfig}
-        leadCollectionConfig={leadCollectionConfig}
-        escalationConfig={escalationConfig}
-        onLeadCollected={handleLeadCollected}
-        onEscalationRequested={handleEscalationRequested}
-        onError={handleError}
-        userEmail="user@example.com" // Replace with actual user email
+      {/* EchoAI Chatbot Container */}
+      <div 
+        ref={containerRef}
+        id="echoai-chatbot"
+        style={{
+          position: 'fixed',
+          ...(config.position.includes('bottom') ? { bottom: '20px' } : { top: '20px' }),
+          ...(config.position.includes('right') ? { right: '20px' } : { left: '20px' }),
+          zIndex: 9999
+        }}
       />
+      
+      {/* Loading indicator */}
+      {isLoading && (
+        <div 
+          style={{
+            position: 'fixed',
+            ...(config.position.includes('bottom') ? { bottom: '20px' } : { top: '20px' }),
+            ...(config.position.includes('right') ? { right: '20px' } : { left: '20px' }),
+            zIndex: 10000,
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            backgroundColor: config.primaryColor,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}
+        >
+          💬
+        </div>
+      )}
+      
+      {/* Error display */}
+      {error && (
+        <div 
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            left: '20px',
+            right: '20px',
+            backgroundColor: '#fee2e2',
+            color: '#dc2626',
+            padding: '12px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            zIndex: 10001
+          }}
+        >
+          EchoAI Error: {error}
+        </div>
+      )}
     </div>
-  )
-}`;
+  );
+};
+
+// Main App Component
+const App: React.FC = () => {
+  return (
+    <div>
+      {/* Your app content */}
+      <h1>Welcome to My Website</h1>
+      <p>Your website content goes here...</p>
+      
+      {/* EchoAI Chatbot */}
+      <EchoAIChatbot />
+    </div>
+  );
+};
+
+export default App;`;
   };
 
   const copyToClipboard = async (text: string) => {
@@ -1479,9 +1700,7 @@ function App() {
               <Tabs defaultValue="html" className="w-full">
                 <TabsList>
                   <TabsTrigger value="html">HTML</TabsTrigger>
-                  {/* <TabsTrigger value="react">React</TabsTrigger>
-                  <TabsTrigger value="typescript">TypeScript</TabsTrigger>
-                  <TabsTrigger value="config">Configuration</TabsTrigger> */}
+                  <TabsTrigger value="react">React</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="html" className="space-y-4">
@@ -1503,7 +1722,7 @@ function App() {
                   </div>
                 </TabsContent>
 
-                {/* <TabsContent value="react" className="space-y-4">
+                <TabsContent value="react" className="space-y-4">
                   <div className="relative">
                     <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto">
                       <code>{generateReactCode()}</code>
@@ -1523,63 +1742,12 @@ function App() {
 
                   <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      <strong>Note:</strong> This example uses the EnhancedChatWidget component. 
-                      Make sure to copy the component files to your React project or install as a package.
+                      <strong>React Integration:</strong> This React component uses useEffect hooks to replicate 
+                      the exact same functionality as the HTML version, including lazy loading, error handling, 
+                      and performance optimizations.
                     </p>
                   </div>
                 </TabsContent>
-
-                <TabsContent value="typescript" className="space-y-4">
-                  <div className="relative">
-                    <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto">
-                      <code>{generateTypeScriptCode()}</code>
-                    </pre>
-                    <Button
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={() => copyToClipboard(generateTypeScriptCode())}
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-
-                  <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                    <p className="text-sm text-green-800 dark:text-green-200">
-                      <strong>TypeScript Benefits:</strong> Full type safety, better IDE support, 
-                      and compile-time error checking for enhanced development experience.
-                    </p>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="config" className="space-y-4">
-                  <div className="relative">
-                    <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto whitespace-pre-wrap">
-                      <code>{generateConfigurationGuide()}</code>
-                    </pre>
-                    <Button
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={() => copyToClipboard(generateConfigurationGuide())}
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-
-                  <div className="p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                    <p className="text-sm text-purple-800 dark:text-purple-200">
-                      <strong>Configuration Guide:</strong> Comprehensive documentation for all 
-                      enhanced features, integration examples, and troubleshooting tips.
-                    </p>
-                  </div>
-                </TabsContent> */}
               </Tabs>
             </CardContent>
           </Card>
