@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "EchoAI - AI-Powered Customer Support",
-  description: "Embed AI-powered customer support and lead qualification chatbots on your website",
+  description:
+    "Embed AI-powered customer support and lead qualification chatbots on your website",
 };
 
 export default function RootLayout({
@@ -29,10 +31,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
           <AuthProvider>
             {children}
             <Toaster richColors />
           </AuthProvider>
+        </NextThemesProvider>
       </body>
     </html>
   );
